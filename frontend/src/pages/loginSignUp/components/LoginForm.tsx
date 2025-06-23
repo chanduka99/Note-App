@@ -9,11 +9,16 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useNavigate } from "react-router"
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const navigate = useNavigate();
+  function handleLogin() {
+    navigate("/dashboard");
+  }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -48,7 +53,7 @@ export function LoginForm({
                 <Input id="password" type="password" required />
               </div>
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" onClick={handleLogin}>
                   Login
                 </Button>
                 {/* <Button variant="outline" className="w-full">
