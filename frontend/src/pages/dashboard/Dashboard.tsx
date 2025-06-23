@@ -11,7 +11,7 @@ function Dashboard(props: Props) {
     const { } = props
 
     return (
-        <div className=' flex justify-center items-center mt-[3vh] mx-[5vw] '>
+        <div className=' flex justify-center items-center mt-[10vh] mx-[5vw] '>
             <div className='md:grid md:grid-cols-3 flex flex-col gap-5'>
                 {journalCardsData.map((data, index) => (
                     <NoteCard

@@ -1,8 +1,8 @@
 import React from 'react'
-import { LoginForm } from "@/components/login-form"
+import { LoginForm } from "@/pages/loginSignUp/components/LoginForm"
 interface Props { }
 
-function Login(props: Props) {
+function LoginSignUp(props: Props) {
     const { } = props
 
     return (
@@ -12,4 +12,4 @@ function Login(props: Props) {
     )
 }
 
-export default Login;
+export default LoginSignUp;
