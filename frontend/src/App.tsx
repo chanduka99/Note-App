@@ -1,5 +1,7 @@
-import './App.css'
-import { BrowserRouter, Routes } from 'react-router'
+// import './App.css'
+import './styles/globals.css'
+import { BrowserRouter, Route, Routes } from 'react-router'
+import Login from './pages/login/Login'
 
 function App() {
 
@@ -7,7 +9,7 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-
+          <Route index element={<Login />} />
         </Routes>
       </BrowserRouter>
     </>
