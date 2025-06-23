@@ -3,10 +3,8 @@
 @custom-variant dark (&:is(.dark *));
 
 #root {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 2rem;
-    text-align: center;
+    margin-left: 1rem;
+    margin-right: 1rem;
 }
 
 :root {
