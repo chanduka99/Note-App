@@ -4,14 +4,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Search } from "lucide-react"
+import type { NavbarProps } from "@/types/types"
 
-interface NavbarProps {
-    brandName?: string
-    userName?: string
-    userInitials?: string
-    onSearch?: (query: string) => void
-    onLogout?: () => void
-}
 
 export function Navbar({
     brandName = "Notes",

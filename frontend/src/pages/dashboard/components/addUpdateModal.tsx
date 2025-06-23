@@ -8,17 +8,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { X, Plus } from "lucide-react"
+import type { AddUpdateModalProps } from "@/types/types"
 
-interface AddUpdateModalProps {
-    open: boolean
-    onOpenChange: (open: boolean) => void
-    onSave?: (note: { title: string; content: string; tags: string[] }) => void
-    initialData?: {
-        title?: string
-        content?: string
-        tags?: string[]
-    }
-}
 
 export function AddUpdateModal({ open, onOpenChange, onSave, initialData }: AddUpdateModalProps) {
     const [title, setTitle] = useState(initialData?.title || "")
