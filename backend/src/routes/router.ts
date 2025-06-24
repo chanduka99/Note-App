@@ -21,7 +21,7 @@ router.delete('/delete-note', handlers.deleteNote);
 router.post('/add-user', handlers.createUser);
 
 //get user
-router.get('./get-user', handlers.getUser);
+router.get('/get-user', handlers.getUser);
 
 
 export default router;

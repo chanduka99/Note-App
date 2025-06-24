@@ -5,7 +5,7 @@ import { error } from "console";
 async function getUserHandler(req: Request, res: Response, next: NextFunction) {
     try {
         const { email, id } = req.query;
-
+        console.log('user email  ' + email + ' id ' + id);
         if (!email && !id) {
             const error = new Error('Please provide either email or id as a query parameter');
             (error as any).status = 400;
