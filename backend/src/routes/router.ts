@@ -15,7 +15,7 @@ router.post('/add-note', handlers.addNote);
 router.put('/update-note', handlers.updateNote);
 
 //delte note
-router.delete('/delte-note', handlers.deleteNote);
+router.delete('/delete-note', handlers.deleteNote);
 
 //add user
 router.post('/add-user', handlers.createUser);
