@@ -1,10 +1,12 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import { Note } from '../models/note.models';
 
-
-async function allNotesHandler(req: Request, res: Response) {
+async function allNotesHandler(req: Request, res: Response, next: NextFunction) {
     try {
-        console.log("request: ", req);
+        const notes = await Note.find();
+        res.json(notes);
     } catch (error) {
+        next(error);
         console.log("allNotesHandlerError: ", error);
     }
 

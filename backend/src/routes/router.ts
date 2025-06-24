@@ -17,5 +17,11 @@ router.put('/update-note', handlers.updateNote);
 //delte note
 router.delete('/delte-note', handlers.deleteNote);
 
+//add user
+router.post('/add-user', handlers.createUser);
+
+//get user
+router.get('./get-user', handlers.getUser);
+
 
 export default router;
