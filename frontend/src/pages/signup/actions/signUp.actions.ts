@@ -1,5 +1,7 @@
 import { doesEmailExist } from "supertokens-web-js/recipe/emailpassword";
 import { signUp } from "supertokens-web-js/recipe/emailpassword";
+import { sendVerificationEmail } from "supertokens-web-js/recipe/emailverification";
+import type { User } from "supertokens-web-js/types";
 
 export async function verifyEmailUnique(email: string): Promise<boolean> {
     try {
@@ -23,7 +25,7 @@ export async function verifyEmailUnique(email: string): Promise<boolean> {
 }
 
 
-export async function signUpUser(email: string, password: string): Promise<{ status: boolean, msg: string }> {
+export async function signUpUser(email: string, password: string): Promise<{ status: boolean, msg: string, user: User | null }> {
     try {
         let response = await signUp({
             formFields: [{
@@ -52,13 +54,13 @@ export async function signUpUser(email: string, password: string): Promise<{ sta
             // the reason string is a user friendly message
             // about what went wrong. It can also contain a support code which users
             // can tell you so you know why their sign up was not allowed.
-            return { status: false, msg: response.status };
+            return { status: false, msg: response.status, user: null };
         } else {
             // sign up successful. The session tokens are automatically handled by
             // the frontend SDK.
-            return { status: true, msg: "signedUp successfully." }
+            return { status: true, msg: "signedUp successfully.", user: response.user }
         }
-        return { status: false, msg: "Failed to register user. Please try again" }
+        return { status: false, msg: "Failed to register user. Please try again", user: null }
     } catch (error: any) {
         if (error.isSuperTokensGeneralError === true) {
             // this may be a custom error message sent from the API by you.
@@ -67,4 +69,26 @@ export async function signUpUser(email: string, password: string): Promise<{ sta
             throw new Error("Oops! Something went wrong.")
         }
     }
+}
+
+export async function sendEmail(): Promise<{ status: boolean, msg: string }> {
+    return { status: true, msg: "success" }
+    // try {
+    //     let response = await sendVerificationEmail();
+    //     if (response.status === "EMAIL_ALREADY_VERIFIED_ERROR") {
+    //         // This can happen if the info about email verification in the session was outdated.
+    //         // Redirect the user to the home page
+    //         return { status: false, msg: 'Failed to verify email.' }
+    //     } else {
+    //         // email was sent successfully.
+    //         return { status: true, msg: "Please check your email and click the link in it" }
+    //     }
+    // } catch (error: any) {
+    //     if (error.isSuperTokensGeneralError === true) {
+    //         // this may be a custom error message sent from the API by you.
+    //         throw new Error(error.message);
+    //     } else {
+    //         throw new Error("Oops! Something went wrong.")
+    //     }
+    // }
 }

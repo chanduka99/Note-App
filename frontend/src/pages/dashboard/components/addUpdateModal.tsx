@@ -118,7 +118,7 @@ export function AddUpdateModal({ open, onOpenChange, onSave, initialData }: AddU
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-medium"
                         disabled={!title.trim() || !content.trim()}
                     >
-                        ADD
+                        SAVE
                     </Button>
                 </div>
             </DialogContent>

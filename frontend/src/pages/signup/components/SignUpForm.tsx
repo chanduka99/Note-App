@@ -3,15 +3,16 @@
 import type React from "react"
 
 import { useState } from "react"
-import { cn } from "@/lib/utils"
+import { cn, logout } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router"
 import { CheckCircle, Mail, ArrowLeft } from "lucide-react"
-import { signUpUser, verifyEmailUnique } from "../actions/signUp.actions"
+import { sendEmail, signUpUser, verifyEmailUnique } from "../actions/signUp.actions"
 import { toast } from "react-toastify"
+import api from "@/lib/api.service"
 
 type SignUpStep = "email" | "password" | "confirmation"
 
@@ -50,16 +51,24 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"div">)
         setIsLoading(true)
 
         try {
-            // Simulate signup API call
             const isUserSignedUP = await signUpUser(email, password);
             if (isUserSignedUP.status) {
                 toast.success(isUserSignedUP.msg);
-                setCurrentStep("confirmation");
+                const isUserEmailVerified = await sendEmail();
+                if (isUserEmailVerified.status && isUserSignedUP.user) {
+                    // setCurrentStep("confirmation");
+                    await api.createUser(isUserSignedUP.user.id, email);
+                    // await logout();
+                    // toast.warn('Please login with your new credentials.');
+                    navigate("/")
+                } else {
+                    toast.error(isUserEmailVerified.msg)
+                }
             } else {
                 toast.error(isUserSignedUP.msg)
             }
-        } catch (error) {
-            toast.error("Oops!. Something went wrong.")
+        } catch (error: any) {
+            toast.error(error.message);
         } finally {
             setIsLoading(false)
         }
@@ -152,42 +161,42 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"div">)
         </Card>
     )
 
-    const renderConfirmationStep = () => (
-        <Card>
-            <CardHeader className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                    <CheckCircle className="h-6 w-6 text-green-600" />
-                </div>
-                <CardTitle>Check your email</CardTitle>
-                <CardDescription>We've sent a verification link to {email}</CardDescription>
-            </CardHeader>
-            <CardContent className="text-center">
-                <div className="flex flex-col gap-4">
-                    <div className="rounded-lg bg-muted p-4">
-                        <Mail className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground">
-                            Click the link in your email to verify your account and complete the signup process.
-                        </p>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                        Didn't receive the email? Check your spam folder or{" "}
-                        <button onClick={() => setCurrentStep("email")} className="underline underline-offset-4 hover:text-primary">
-                            try a different email address
-                        </button>
-                    </div>
-                    <Button variant="outline" onClick={handleLoginRedirect} className="w-full bg-transparent">
-                        Back to Login
-                    </Button>
-                </div>
-            </CardContent>
-        </Card>
-    )
+    // const renderConfirmationStep = () => (
+    // <Card>
+    //     <CardHeader className="text-center">
+    //         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+    //             <CheckCircle className="h-6 w-6 text-green-600" />
+    //         </div>
+    //         <CardTitle>Check your email</CardTitle>
+    //         <CardDescription>We've sent a verification link to {email}</CardDescription>
+    //     </CardHeader>
+    //     <CardContent className="text-center">
+    //         <div className="flex flex-col gap-4">
+    //             <div className="rounded-lg bg-muted p-4">
+    //                 <Mail className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
+    //                 <p className="text-sm text-muted-foreground">
+    //                     Click the link in your email to verify your account and complete the signup process.
+    //                 </p>
+    //             </div>
+    //             <div className="text-sm text-muted-foreground">
+    //                 Didn't receive the email? Check your spam folder or{" "}
+    //                 <button onClick={() => setCurrentStep("email")} className="underline underline-offset-4 hover:text-primary">
+    //                     try a different email address
+    //                 </button>
+    //             </div>
+    //             <Button variant="outline" onClick={handleLoginRedirect} className="w-full bg-transparent">
+    //                 Back to Login
+    //             </Button>
+    //         </div>
+    //     </CardContent>
+    // </Card>
+    // )
 
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             {currentStep === "email" && renderEmailStep()}
             {currentStep === "password" && renderPasswordStep()}
-            {currentStep === "confirmation" && renderConfirmationStep()}
+            {/* {currentStep === "confirmation" && renderConfirmationStep()} */}
         </div>
     )
 }

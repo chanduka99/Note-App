@@ -44,7 +44,3 @@ export async function signInUser(email: string, password: string): Promise<{ sta
     }
 }
 
-export async function logout() {
-    await Session.signOut();
-    window.location.href = "/"; // or to wherever your logic page is
-}

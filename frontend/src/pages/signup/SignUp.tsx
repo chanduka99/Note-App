@@ -1,8 +1,20 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { SignUpForm } from "@/pages/signup/components/SignUpForm"
+import { doesSessionExist } from '@/lib/utils';
+import { useNavigate } from 'react-router';
 interface Props { }
 
 function SignUp(props: Props) {
+    const navigate = useNavigate();
+    useEffect(() => {
+        async function check() {
+            const hasSession = await doesSessionExist();
+            if (hasSession) {
+                navigate('/dashboard')
+            }
+        }
+        check();
+    }, []);
     const { } = props
 
     return (

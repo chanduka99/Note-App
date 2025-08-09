@@ -1,29 +1,83 @@
-import React, { useState } from 'react'
-import type { JournalCardProps } from '@/types/types';
-import journalCardsData from './components/dummyData';
+import { useEffect, useState } from 'react'
+import type { JournalCardProps, Note } from '@/types/types';
 import NoteCard from './components/NoteCard';
 import { AddUpdateModal } from './components/addUpdateModal';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { doesSessionExist } from '@/lib/utils';
+import { useNavigate } from 'react-router';
+import { createNewNote, fetchUserNotes } from './actions/dashboard.actions';
 
 
 interface Props { }
 
 function Dashboard(props: Props) {
+
+    const navigate = useNavigate();
+
+    const [notes, setNotes] = useState<JournalCardProps[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        let isMounted = true;
+        (async () => {
+            const hasSession = await doesSessionExist();
+            if (!hasSession) {
+                navigate('/');
+                return;
+            }
+            try {
+                const userNotes = await fetchUserNotes();
+                if (!isMounted) return;
+                const mapped: JournalCardProps[] = userNotes.map((n) => ({
+                    id: n._id,
+                    title: n.title,
+                    date: new Date(n.date).toISOString().slice(0, 10),
+                    description: n.description,
+                    hashtags: n.hashtags,
+                    isPinned: n.isPinned ?? false,
+                }));
+                setNotes(mapped);
+            } catch (e) {
+                // noop for now
+            } finally {
+                if (isMounted) setIsLoading(false);
+            }
+        })();
+        return () => {
+            isMounted = false;
+        }
+    }, [])
+
     const [isModalOpen, setIsModalOpen] = useState(false)
 
     const { } = props
 
-    const handleSaveNote = (note: { title: string; content: string; tags: string[] }) => {
-        console.log("New note:", note)
-        // Here you would typically save the note to your state or database
+    async function handleUpdateNote(note: Note) {
+        if (await doesSessionExist()) {
+            await createNewNote(note);
+            // refresh list after creation
+            const userNotes = await fetchUserNotes();
+            const mapped: JournalCardProps[] = userNotes.map((n) => ({
+                id: n._id,
+                title: n.title,
+                date: new Date(n.date).toISOString().slice(0, 10),
+                description: n.description,
+                hashtags: n.hashtags,
+                isPinned: n.isPinned ?? false,
+            }));
+            setNotes(mapped);
+        } else {
+            navigate('/');
+        }
     }
     return (
         <div className=' flex justify-center items-center mt-[10vh] mx-[5vw] '>
             <div className='md:grid md:grid-cols-3 flex flex-col gap-5'>
-                {journalCardsData.map((data, index) => (
+                {(isLoading ? [] : notes).map((data, index) => (
                     <NoteCard
                         key={index}
+                        id={data.id}
                         title={data.title}
                         date={data.date}
                         description={data.description}
@@ -42,7 +96,7 @@ function Dashboard(props: Props) {
                     <Plus className="h-6 w-6" />
                 </Button>
             </div>
-            <AddUpdateModal open={isModalOpen} onOpenChange={setIsModalOpen} onSave={handleSaveNote} />
+            <AddUpdateModal open={isModalOpen} onOpenChange={setIsModalOpen} onSave={handleUpdateNote} />
         </div>
     )
 }

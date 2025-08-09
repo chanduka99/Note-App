@@ -4,10 +4,10 @@ import { error } from "console";
 
 async function createUserHandler(req: Request, res: Response, next: NextFunction) {
     try {
-        const { email, password } = req.body;
+        const { superTokenId, email } = req.body;
 
-        if (!email || !password) {
-            const error = new Error('Email and password are required');
+        if (!email || !superTokenId) {
+            const error = new Error('Email and UserId required');
             (error as any).status = 400;
             throw error;
         }
@@ -20,9 +20,9 @@ async function createUserHandler(req: Request, res: Response, next: NextFunction
             throw error;
         }
 
-        const newUser = new User({ email, password });
+        const newUser = new User({ email, superTokenId });
         const savedUser = await newUser.save();
-        res.status(201).json({ id: savedUser._id, email: savedUser.email });
+        res.status(201).json({ id: savedUser._id, email: savedUser.email, superTokenId: savedUser.superTokenId });
     } catch (error) {
         next(error);
         console.log("createUserHandler Error: ", error)

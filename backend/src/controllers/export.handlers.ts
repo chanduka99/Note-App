@@ -8,7 +8,7 @@ import createUserHandler from './createUser.handler';
 
 const handlers = {
     addNote: addNoteHandler,
-    updateNote: allNotesHandler,
+    updateNote: updateNoteHandler,
     deleteNote: deleteNoteHandler,
     allNotes: allNotesHandler,
     getUser: getUserHandler,
