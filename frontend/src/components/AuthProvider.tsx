@@ -1,10 +1,10 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useState } from "react";
 import type { ReactNode } from "react";
 import axios from 'axios';
-import { error } from "console";
 
 
 const AuthContext = createContext(undefined);
+
 
 export function useAuth() {
 
@@ -23,6 +23,7 @@ interface AuthProviderProps {
 
 function AuthProvider({ children }: AuthProviderProps) {
     const [token, setToken] = useState<undefined | null | string>(); // token value here will be undefined
+    const api = axios;
 
     useEffect(() => {
         const fetchMe = async () => {

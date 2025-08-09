@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import type { JournalCardProps } from '@/types/types';
 import journalCardsData from './components/dummyData';
-import { data } from 'react-router';
 import NoteCard from './components/NoteCard';
 import { AddUpdateModal } from './components/addUpdateModal';
 import { Button } from '@/components/ui/button';

@@ -10,15 +10,46 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNavigate } from "react-router"
+import { useState } from "react"
+import { signInUser } from "../actions/login.actions"
+import { toast } from "react-toastify"
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
-  function handleLogin() {
-    navigate("/dashboard");
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email || !password) {
+      toast.error("Please enter both email and password.")
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const isUserSignedIn = await signInUser(email, password);
+      if (isUserSignedIn.status) {
+        toast.success(isUserSignedIn.msg);
+        navigate("/dashboard");
+      } else {
+        toast.error(isUserSignedIn.msg);
+      }
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+
   }
+
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -37,7 +68,10 @@ export function LoginForm({
                   id="email"
                   type="email"
                   placeholder="m@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={isLoading}
                 />
               </div>
               <div className="grid gap-3">
@@ -50,11 +84,19 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={isLoading}
+                />
               </div>
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full" onClick={handleLogin}>
-                  Login
+                <Button type="submit" className="w-full" onClick={handleLogin} disabled={isLoading}>
+                  {isLoading ? "Please Wait..." : "Login"}
                 </Button>
                 {/* <Button variant="outline" className="w-full">
                   Login with Google
@@ -63,7 +105,7 @@ export function LoginForm({
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
-              <a href="#" className="underline underline-offset-4">
+              <a href="/signUp" className="underline underline-offset-4">
                 Sign up
               </a>
             </div>

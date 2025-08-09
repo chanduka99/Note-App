@@ -1,17 +1,21 @@
 import React from "react";
-
+// import dotenv from 'dotenv';
 import SuperTokens, { SuperTokensWrapper } from "supertokens-auth-react";
 import EmailPassword from "supertokens-auth-react/recipe/emailpassword";
 import Session from "supertokens-auth-react/recipe/session";
+// dotenv.config();
 
-SuperTokens.init({
-    appInfo: {
-        // learn more about this on https://supertokens.com/docs/references/frontend-sdks/reference#sdk-configuration
-        appName: "<YOUR_APP_NAME>",
-        apiDomain: "<YOUR_API_DOMAIN>",
-        websiteDomain: "<YOUR_WEBSITE_DOMAIN>",
-        apiBasePath: "/auth",
-        websiteBasePath: "/auth",
-    },
-    recipeList: [EmailPassword.init(), Session.init()],
-});
+async function initializeSuperTokens() {
+    SuperTokens.init({
+        appInfo: {
+            appName: "My App 1",
+            apiDomain: "http://localhost:4000/note-app",
+            websiteDomain: "http://localhost:5173",
+            apiBasePath: "/",
+            websiteBasePath: "/",
+        },
+        recipeList: [EmailPassword.init(), Session.init()],
+    });
+}
+
+export default initializeSuperTokens;
