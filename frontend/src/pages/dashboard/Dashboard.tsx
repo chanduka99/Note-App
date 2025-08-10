@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import type { JournalCardProps, Note } from '@/types/types';
+import { useEffect, useState, useMemo } from 'react'
+import type { DashboardProps, JournalCardProps, Note } from '@/types/types';
 import NoteCard from './components/NoteCard';
 import { AddUpdateModal } from './components/addUpdateModal';
 import { Button } from '@/components/ui/button';
@@ -9,14 +9,34 @@ import { useNavigate } from 'react-router';
 import { createNewNote, fetchUserNotes } from './actions/dashboard.actions';
 
 
-interface Props { }
 
-function Dashboard(props: Props) {
+
+function Dashboard({ search }: DashboardProps) {
 
     const navigate = useNavigate();
 
     const [notes, setNotes] = useState<JournalCardProps[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [searchQuery, setSearchQuery] = useState<string>("");
+
+    // Filter notes based on search query
+    const filteredNotes = useMemo(() => {
+        if (!searchQuery.trim()) {
+            return notes;
+        }
+        
+        const query = searchQuery.toLowerCase().trim();
+        return notes.filter((note) => {
+            const titleMatch = note.title.toLowerCase().includes(query);
+            const descriptionMatch = note.description.toLowerCase().includes(query);
+            const hashtagMatch = note.hashtags.some(tag => 
+                tag.toLowerCase().includes(query)
+            );
+            
+            return titleMatch || descriptionMatch || hashtagMatch;
+        });
+    }, [notes, searchQuery]);
+
 
     useEffect(() => {
         let isMounted = true;
@@ -49,9 +69,13 @@ function Dashboard(props: Props) {
         }
     }, [])
 
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    useEffect(
+        () => {
+            setSearchQuery(search || "");
+        }, [search]
+    );
 
-    const { } = props
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     async function handleUpdateNote(note: Note) {
         if (await doesSessionExist()) {
@@ -74,7 +98,7 @@ function Dashboard(props: Props) {
     return (
         <div className=' flex justify-center items-center mt-[10vh] mx-[5vw] '>
             <div className='md:grid md:grid-cols-3 flex flex-col gap-5'>
-                {(isLoading ? [] : notes).map((data, index) => (
+                {(isLoading ? [] : filteredNotes).map((data, index) => (
                     <NoteCard
                         key={index}
                         id={data.id}

@@ -23,10 +23,14 @@ export interface NavbarProps {
     brandName?: string
     userName?: string
     userInitials?: string
-    onSearch?: (query: string) => void
+    onSearch: (query: string) => void
     onLogout?: () => void
     signedIn?: boolean
     isLoading?: boolean
+}
+
+export interface DashboardProps {
+    search: string
 }
 
 export interface UserNoteResponseItem {

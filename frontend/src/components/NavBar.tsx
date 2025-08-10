@@ -14,14 +14,15 @@ import api from "@/lib/api.service"
 
 export function Navbar({
     brandName,
-    onSearch,
     onLogout,
+    onSearch
 }: NavbarProps) {
 
     const [loading, setLoading] = useState<boolean>(false);
     const [signedIn, setSignedIn] = useState<boolean>(false);
     const [userName, setUserName] = useState<string>("");
     const [userInitials, setUserInitials] = useState<string>("");
+    const [query, setQuery] = useState<string>('');
 
     async function refreshUserInfo() {
         setLoading(true);
@@ -65,6 +66,10 @@ export function Navbar({
         }
         setLoading(false);
     }
+    async function handleSearch(event: React.ChangeEvent<HTMLInputElement>) {
+        setQuery(event.target.value);
+        onSearch(event.target.value);
+    }
     return (
         <nav className="w-full bg-white border-b border-gray-200 px-6 py-3">
             <div className="flex items-center justify-between">
@@ -86,7 +91,8 @@ export function Navbar({
                                         type="text"
                                         placeholder="Search Notes"
                                         className="w-full bg-gray-50 border-gray-200 pl-4 pr-10 py-2 text-sm placeholder:text-gray-500 focus:bg-white focus:border-gray-300 focus:ring-1 focus:ring-gray-300"
-                                        onChange={(e) => onSearch?.(e.target.value)}
+                                        onChange={handleSearch}
+                                        value={query}
                                     />
                                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                         <Search className="h-4 w-4 text-gray-400" />
