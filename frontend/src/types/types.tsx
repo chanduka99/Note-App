@@ -5,6 +5,7 @@ export interface JournalCardProps {
     description: string
     hashtags: string[]
     isPinned?: boolean
+    onPinChange?: () => Promise<void>
 }
 
 export interface AddUpdateModalProps {

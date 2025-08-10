@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button"
 import { Edit, Trash2, Pin } from "lucide-react"
 import type { JournalCardProps, Note } from "@/types/types"
 import { AddUpdateModal } from "./addUpdateModal"
-import { updateNote, deleteNote } from "../actions/dashboard.actions"
+import { updateNote, deleteNote, toggleNotePin } from "../actions/dashboard.actions"
 import { toast } from "react-toastify"
 
-
-export default function NoteCard({ id, title, date, description, hashtags, isPinned = false }: JournalCardProps) {
+export default function NoteCard({ id, title, date, description, hashtags, isPinned, onPinChange }: JournalCardProps) {
 
     const [isEditOpen, setIsEditOpen] = useState(false)
+    const [pinned, setPinned] = useState(isPinned)
 
     async function handleEdit() {
         try{
@@ -30,6 +30,21 @@ export default function NoteCard({ id, title, date, description, hashtags, isPin
         }
     }
 
+    async function handlePinToggle() {
+        try {
+            const newPinStatus = !pinned;
+            await toggleNotePin(id, newPinStatus);
+            setPinned(newPinStatus);
+            toast.success(newPinStatus ? 'Note pinned!' : 'Note unpinned!');
+            // Call the callback to refresh notes in parent component
+            if (onPinChange) {
+                await onPinChange();
+            }
+        } catch (error) {
+            toast.error('Error toggling pin status');
+        }
+    }
+
     return (
         <>
         <Card className="relative bg-white border border-gray-200 hover:shadow-md transition-shadow">
@@ -39,8 +54,13 @@ export default function NoteCard({ id, title, date, description, hashtags, isPin
                         <h3 className="font-semibold text-gray-900 text-base leading-tight mb-1">{title}</h3>
                         <p className="text-sm text-gray-500">{date}</p>
                     </div>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600">
-                        <Pin className={`h-4 w-4 ${isPinned ? "fill-red-500 text-red-500" : ""}`} />
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600"
+                        onClick={handlePinToggle}
+                    >
+                        <Pin className={`h-4 w-4 ${pinned ? "fill-red-500 text-red-500" : ""}`} />
                     </Button>
                 </div>
             </CardHeader>

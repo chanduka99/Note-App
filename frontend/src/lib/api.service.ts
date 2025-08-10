@@ -52,14 +52,12 @@ const api = {
         );
         return response.data;
     },
-    updateNote: async (noteId: string, note: Note) => {
+    updateNote: async (noteId: string, note: Note | { isPinned: boolean }) => {
         const response = await axios.put(
             'http://localhost:4000/note-app/update-note',
             {
                 id: noteId,
-                title: note.title,
-                description: note.content,
-                hashtags: note.tags,
+                ...note,
             },
             {
                 withCredentials: true,

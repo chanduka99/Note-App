@@ -21,21 +21,46 @@ function Dashboard({ search }: DashboardProps) {
 
     // Filter notes based on search query
     const filteredNotes = useMemo(() => {
-        if (!searchQuery.trim()) {
-            return notes;
+        let filtered = notes;
+        
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase().trim();
+            filtered = notes.filter((note) => {
+                const titleMatch = note.title.toLowerCase().includes(query);
+                const descriptionMatch = note.description.toLowerCase().includes(query);
+                const hashtagMatch = note.hashtags.some(tag => 
+                    tag.toLowerCase().includes(query)
+                );
+                
+                return titleMatch || descriptionMatch || hashtagMatch;
+            });
         }
         
-        const query = searchQuery.toLowerCase().trim();
-        return notes.filter((note) => {
-            const titleMatch = note.title.toLowerCase().includes(query);
-            const descriptionMatch = note.description.toLowerCase().includes(query);
-            const hashtagMatch = note.hashtags.some(tag => 
-                tag.toLowerCase().includes(query)
-            );
-            
-            return titleMatch || descriptionMatch || hashtagMatch;
+        // Sort pinned notes to the top
+        return filtered.sort((a, b) => {
+            if (a.isPinned && !b.isPinned) return -1;
+            if (!a.isPinned && b.isPinned) return 1;
+            return 0;
         });
     }, [notes, searchQuery]);
+
+    // Function to refresh notes after pin status change
+    const refreshNotes = async () => {
+        try {
+            const userNotes = await fetchUserNotes();
+            const mapped: JournalCardProps[] = userNotes.map((n) => ({
+                id: n._id,
+                title: n.title,
+                date: new Date(n.date).toISOString().slice(0, 10),
+                description: n.description,
+                hashtags: n.hashtags,
+                isPinned: n.isPinned ?? false,
+            }));
+            setNotes(mapped);
+        } catch (e) {
+            // noop for now
+        }
+    };
 
 
     useEffect(() => {
@@ -107,6 +132,7 @@ function Dashboard({ search }: DashboardProps) {
                         description={data.description}
                         hashtags={data.hashtags}
                         isPinned={data.isPinned}
+                        onPinChange={refreshNotes}
                     />)
                 )}
             </div>

@@ -36,3 +36,12 @@ export async function deleteNote(noteId: string) {
         throw new Error(message);
     }
 }
+
+export async function toggleNotePin(noteId: string, isPinned: boolean) {
+    try {
+        return await api.updateNote(noteId, { isPinned });
+    } catch (error: any) {
+        const message = error?.response?.data?.message || 'Failed to toggle pin status.';
+        throw new Error(message);
+    }
+}
